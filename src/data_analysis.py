@@ -60,8 +60,14 @@ def normalize_data():
     return min_max_df
 
 def main():
-    validate_data(intersection_all())
-    validate_data(normalize_data())
+    df = intersection_all()
+    print("Original DataFrame:")
+    validate_data(df)
+    
+    df_normalized = normalize_data()
+    print("\nNormalized DataFrame:")
+    validate_data(df_normalized)
+    
     # intersection_all_count()
     # res_dfs = intersection_all()
     # for df in res_dfs.values():
