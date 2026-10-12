@@ -1,65 +1,63 @@
 from functools import reduce
-import numpy as np
+from typing import Set, Tuple
+
 import pandas as pd
+
 import load_data as ld
 
+EXCLUDE_COLS = ['Country', 'Year']
 
-# Находит страны, которые есть во всех датафреймах
-def get_intersection_set(dfs):
+
+def get_intersection_set(dfs: Tuple[pd.DataFrame, ...]) -> Set[str]:
+    """Find countries present in all provided DataFrames"""
     sets = [set(df["Country"]) for df in dfs]
     return reduce(lambda left, right: left.intersection(right), sets)
 
 
-# Количество совпадающих стран
-def intersection_all_count():
+def intersection_all_count() -> None:
+    """Print the number of countries present in all years"""
     dfs = ld.results_by_year()
     result = get_intersection_set(dfs)
     print(f"Intersection of all years: {len(result)} rows")
 
 
-# Возвращает обрезанные датафреймы только с общими странами     
-def intersection_all():
+def intersection_all() -> pd.DataFrame:
+    """Filter all yearly DataFrames to keep only countries present in every year,
+    then concatenate into a single DataFrame"""
     dfs = ld.results_by_year()
-    result = get_intersection_set(dfs)
-
-    intersected_dfs = []
-    for df in dfs:
-        df_intersection = df[df["Country"].isin(result)].copy()
-        intersected_dfs.append(df_intersection)
-
-    result_dfs = {}
-
-    for year, df in zip(range(2014, 2026), intersected_dfs):
-        result_dfs[f"res_{year}"] = df
-        
-    return pd.concat(result_dfs.values(), ignore_index=True)
-
-
-# Проверка данных
-def validate_data(df):
+    common_countries = get_intersection_set(dfs)
     
+    intersected_dfs = [df[df["Country"].isin(common_countries)].copy() for df in dfs]
+    
+    return pd.concat(intersected_dfs, ignore_index=True)
+
+
+def validate_data(df: pd.DataFrame) -> None:
+    """Print validation info about the DataFrame: structure, stats, nulls, unique countries"""
     print(f"Combined DataFrame Info:\n{df.info()}\n")
     print(f"Description:\n{df.describe()}\n")
     print(f"Null values:\n{df.isnull().sum()}\n")
     print(f"Number of unique countries: {df['Country'].nunique()}")
 
 
-# Нормализация min max
-def normalize_data():
+def normalize_data() -> pd.DataFrame:
+    """Apply Min-Max normalization to all numeric columns except Country and Year"""
     df = intersection_all()
-    exclude_cols = ['Country', 'Year']
     
-    num_cols = [
-    col for col in df.select_dtypes(include=['number']).columns 
-    if col not in exclude_cols]
+    numeric_cols = [
+        col for col in df.select_dtypes(include=['number']).columns
+        if col not in EXCLUDE_COLS
+    ]
     
-    min_max_df = df.copy()
+    normalized_df = df.copy()
+    col_min = normalized_df[numeric_cols].min()
+    col_max = normalized_df[numeric_cols].max()
+    normalized_df[numeric_cols] = (normalized_df[numeric_cols] - col_min) / (col_max - col_min)
     
-    min_max_df[num_cols] = (min_max_df[num_cols] - min_max_df[num_cols].min()) / (min_max_df[num_cols].max() - min_max_df[num_cols].min())
-    
-    return min_max_df
+    return normalized_df
 
-def main():
+
+def main() -> None:
     df = intersection_all()
     print("Original DataFrame:")
     validate_data(df)
@@ -67,11 +65,7 @@ def main():
     df_normalized = normalize_data()
     print("\nNormalized DataFrame:")
     validate_data(df_normalized)
-    
-    # intersection_all_count()
-    # res_dfs = intersection_all()
-    # for df in res_dfs.values():
-        # print(len(df))
 
 
-main()
+if __name__ == '__main__':
+    main()
