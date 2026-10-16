@@ -8,12 +8,12 @@ pd.set_option('display.max_columns', None)
 # Constants
 YEARS = list(range(2014, 2026))
 CSV_PATHS = {
-    'cost': '../data/cost-of-living_country.csv',
-    'crime': '../data/crime_country.csv',
-    'health': '../data/health-care_country.csv',
-    'pollution': '../data/pollution_country.csv',
-    'property': '../data/property-investment_country.csv',
-    'traffic': '../data/traffic_country.csv'
+    'cost': 'data/cost-of-living_country.csv',
+    'crime': 'data/crime_country.csv',
+    'health': 'data/health-care_country.csv',
+    'pollution': 'data/pollution_country.csv',
+    'property': 'data/property-investment_country.csv',
+    'traffic': 'data/traffic_country.csv'
 }
 
 

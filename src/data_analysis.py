@@ -1,5 +1,6 @@
 from functools import reduce
 from typing import Set, Tuple
+from sklearn.preprocessing import StandardScaler
 
 import pandas as pd
 
@@ -40,7 +41,7 @@ def validate_data(df: pd.DataFrame) -> None:
     print(f"Number of unique countries: {df['Country'].nunique()}")
 
 
-def normalize_data() -> pd.DataFrame:
+def normalize_data(method: str = "minmax") -> pd.DataFrame:
     """Apply Min-Max normalization to all numeric columns except Country and Year"""
     df = intersection_all()
     
@@ -48,11 +49,16 @@ def normalize_data() -> pd.DataFrame:
         col for col in df.select_dtypes(include=['number']).columns
         if col not in EXCLUDE_COLS
     ]
-    
-    normalized_df = df.copy()
-    col_min = normalized_df[numeric_cols].min()
-    col_max = normalized_df[numeric_cols].max()
-    normalized_df[numeric_cols] = (normalized_df[numeric_cols] - col_min) / (col_max - col_min)
+    if method == "standard":
+        normalized_df = df.copy()
+        scaler = StandardScaler()
+        normalized_df[numeric_cols] = scaler.fit_transform(normalized_df[numeric_cols])
+        
+    else:
+        normalized_df = df.copy()
+        col_min = normalized_df[numeric_cols].min()
+        col_max = normalized_df[numeric_cols].max()
+        normalized_df[numeric_cols] = (normalized_df[numeric_cols] - col_min) / (col_max - col_min)
     
     return normalized_df
 
@@ -62,7 +68,7 @@ def main() -> None:
     print("Original DataFrame:")
     validate_data(df)
     
-    df_normalized = normalize_data()
+    df_normalized = normalize_data("standard")
     print("\nNormalized DataFrame:")
     validate_data(df_normalized)
 
