@@ -6,7 +6,7 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 
 # Constants
-YEARS = list(range(2014, 2026))
+YEARS = list(range(2014, 2027))
 CSV_PATHS = {
     'cost': 'data/cost-of-living_country.csv',
     'crime': 'data/crime_country.csv',

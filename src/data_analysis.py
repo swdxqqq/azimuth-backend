@@ -41,10 +41,8 @@ def validate_data(df: pd.DataFrame) -> None:
     print(f"Number of unique countries: {df['Country'].nunique()}")
 
 
-def normalize_data(method: str = "minmax") -> pd.DataFrame:
+def normalize_data(df: pd.DataFrame, method: str = "minmax") -> pd.DataFrame:
     """Apply Min-Max normalization to all numeric columns except Country and Year"""
-    df = intersection_all()
-    
     numeric_cols = [
         col for col in df.select_dtypes(include=['number']).columns
         if col not in EXCLUDE_COLS
@@ -62,15 +60,67 @@ def normalize_data(method: str = "minmax") -> pd.DataFrame:
     
     return normalized_df
 
+def get_year_snapshot(year: int) -> pd.DataFrame:
+    """
+    Get all countries for the specified year. 
+    Does not require completeness across all years
+    """
+    res_data = ld.map_data()
+    df_year = res_data[f'res_{year}']
+    return df_year
+
+def remove_excessive_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Remove excessive features, Dimensity Reduction
+    Returns DataFrame with 14 features
+    """
+    columns_to_remove = [
+        # Cost of living
+        'Cost of Living Plus Rent Index',
+        'Groceries Index',
+        'Restaurant Price Index',
+        'Rent Index',
+        
+        # Health
+        'Health CareExp. Index',
+        
+        # Pollution
+        'Exp Pollution Index',
+        
+        # Property
+        'Gross Rental Yield Outside of Centre',
+        'Price To Rent Ratio Outside Of City Centre',
+        'Mortgage As A Percentage Of Income',
+        
+        # Traffic
+        'Time Index(in minutes)',
+        'Inefficiency Index',
+        'Time Exp. Index',
+        
+        # Crime
+        'Safety Index'       
+    ]
+    
+    res_df = df.drop(columns=columns_to_remove)
+    return res_df
 
 def main() -> None:
     df = intersection_all()
     print("Original DataFrame:")
     validate_data(df)
     
-    df_normalized = normalize_data("standard")
+    df_normalized = normalize_data(df=df, method="standard")
     print("\nNormalized DataFrame:")
     validate_data(df_normalized)
+    
+    df_2025_all = get_year_snapshot(2025)
+    print(f"Countries in 2025: {len(df_2025_all)}")
+    df_2025_cut = remove_excessive_features(df_2025_all)
+    print(f"Shape: {df_2025_cut.shape}")
+    
+    df_2026_all = get_year_snapshot(2026)
+    print(f"Countries in 2026: {len(df_2026_all)}")
+    
 
 
 if __name__ == '__main__':
