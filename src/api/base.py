@@ -18,7 +18,7 @@ class HttpClient:
                 return cached_data
 
         try:
-            req = Request(url, headers={'User-Agent': 'NomadCompass/1.0'})
+            req = Request(url, headers={'User-Agent': 'Azimuth/1.0'})
             with urlopen(req, timeout=timeout) as response:
                 data = json.loads(response.read().decode())
                 self._cache[cache_key] = (time.time(), data)
