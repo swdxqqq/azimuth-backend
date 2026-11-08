@@ -1,3 +1,4 @@
 from .frankfurter import FrankfurterClient
+from .worldbank import WorldBankClient
 
-__all__ = ["FrankfurterClient"]
+__all__ = ["FrankfurterClient", "WorldBankClient"]
