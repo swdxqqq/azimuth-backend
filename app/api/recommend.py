@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.schemas.recommend import RecommendationRequest, RecommendationResponse, RecommendationItem
+from app.models.country import Country
+from app.schemas.Recommend import RecommendationRequest, RecommendationResponse, RecommendationItem
 from app.services.recsys_adapter import RecSysAdapter
 
 router = APIRouter(prefix="/recommend", tags=["Recommendations"])
@@ -22,11 +23,18 @@ def get_recommendations(request: RecommendationRequest, db: Session = Depends(ge
 
     results = adapter.recommend(preferences, temp_pref, request.top_n)
 
+    # Get country IDs mapping
+    countries = db.query(Country).all()
+    country_id_map = {c.name: c.id for c in countries}
+
     recommendations = []
     for _, row in results.iterrows():
+        country_name = row["Country"]
+        country_id = country_id_map.get(country_name, 0)
+        
         recommendations.append(RecommendationItem(
-            country_id=int(row["Country"]),
-            name=row["Country"],
+            country_id=country_id,
+            name=country_name,
             score=float(row["Final_Score"]),
             breakdown={},
             confidence=float(row.get("Confidence", 1.0))
