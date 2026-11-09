@@ -69,7 +69,7 @@ def load_countries_data():
                 'Egypt': 'EG', 'South Africa': 'ZA', 'Morocco': 'MA',
                 'Tunisia': 'TN', 'Algeria': 'DZ', 'Nigeria': 'NG',
                 'Kenya': 'KE', 'Ghana': 'GH', 'Senegal': 'SN',
-                'UAE': 'AE', 'Saudi Arabia': 'SA', 'Qatar': 'QA',
+                'UAE': 'AE', 'United Arab Emirates': 'AE', 'Saudi Arabia': 'SA', 'Qatar': 'QA',
                 'Kuwait': 'KW', 'Bahrain': 'BH', 'Oman': 'OM',
                 'Jordan': 'JO', 'Lebanon': 'LB', 'Iran': 'IR',
                 'Iraq': 'IQ', 'Kazakhstan': 'KZ', 'Uzbekistan': 'UZ',
@@ -120,7 +120,7 @@ def load_countries_data():
                 code=code,
                 capital=capital,
                 region=region,
-                flag_url=f"https://flagcdn.com/w320/{code.lower()}.png",
+                flag_url=f"/assets/flags/{code} - {country_name}.svg",
                 latitude=latitude,
                 longitude=longitude
             )
