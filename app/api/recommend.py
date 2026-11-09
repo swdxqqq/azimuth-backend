@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.country import Country
-from app.schemas.Recommend import RecommendationRequest, RecommendationResponse, RecommendationItem
+from app.schemas.recommend import RecommendationRequest, RecommendationResponse, RecommendationItem
 from app.services.recsys_adapter import RecSysAdapter
 
 router = APIRouter(prefix="/recommend", tags=["Recommendations"])
